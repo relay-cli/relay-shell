@@ -9,7 +9,7 @@ npm install
 npm run demo
 ```
 
-Press `q` to quit. To print one frame without opening the interactive screen:
+Press `?` for the keyboard reference and `q` to quit. To print one frame without opening the interactive screen:
 
 ```sh
 npx tsx src/cli.tsx --demo --snapshot
@@ -29,6 +29,29 @@ await runShell(
 ```
 
 `runShell` renders on the alternate screen, so the terminal's scrollback is restored when the application exits.
+
+## Keybindings
+
+Components declare the keys they handle, and Relay Shell routes each key press to the right one. Overlays sit above panes, and panes sit above application-wide keys.
+
+```tsx
+import {useApp} from 'ink';
+import {KeyHints, KeymapProvider, ShellFrame, runShell, useKeybindings} from '@relay-cli/shell';
+
+const App = () => {
+  const {exit} = useApp();
+  useKeybindings([{keys: ['q', 'ctrl+c'], description: 'Quit', run: () => exit()}]);
+  return <ShellFrame title="Inventory" footer={<KeyHints />} />;
+};
+
+await runShell(
+  <KeymapProvider>
+    <App />
+  </KeymapProvider>,
+);
+```
+
+See [the keybinding guide](./docs/keyboard.md) for key specs, layers, and text input.
 
 ## Development
 
