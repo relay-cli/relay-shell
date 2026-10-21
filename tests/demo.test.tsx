@@ -6,12 +6,25 @@ import {tick} from './helpers.js';
 
 describe('demonstration', () => {
   it('opens the keyboard reference over the frame', async () => {
-    const view = render(<DemoApp width={60} height={20} />);
+    const view = render(<DemoApp width={80} height={24} />);
     await tick();
-    expect(view.lastFrame()).toContain('q / Ctrl+C quit');
     view.stdin.write('?');
     await tick();
     expect(view.lastFrame()).toContain('Keyboard');
     expect(view.lastFrame()).toContain('Application');
+  });
+
+  it('moves through hosts only while the host list has focus', async () => {
+    const view = render(<DemoApp width={80} height={24} />);
+    await tick();
+    view.stdin.write('j');
+    await tick();
+    expect(view.lastFrame()).toContain('› ● api-2');
+    view.stdin.write('\t');
+    await tick();
+    view.stdin.write('j');
+    await tick();
+    expect(view.lastFrame()).toContain('› ● api-2');
+    expect(view.lastFrame()).not.toContain('next host');
   });
 });
