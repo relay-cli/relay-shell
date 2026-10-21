@@ -11,7 +11,7 @@ describe('relay-shell command', () => {
   it('prints a snapshot of the demonstration without a terminal', async () => {
     const {stdout} = await run(process.execPath, [tsx, cli, '--demo', '--snapshot']);
     expect(stdout).toContain('Relay Shell');
-    expect(stdout).toContain('q quit');
+    expect(stdout).toContain('q / Ctrl+C quit');
   }, 30_000);
 
   it('explains how to start when no mode is chosen', async () => {
