@@ -133,6 +133,7 @@ export const PaneFocusProvider = ({
             keys: keys.previous,
             description: 'Previous pane',
             group: 'Panes',
+            hint: false,
             run: () => focus.previous(),
           },
         ],

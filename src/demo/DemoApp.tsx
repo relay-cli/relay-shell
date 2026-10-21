@@ -2,7 +2,15 @@ import {useState} from 'react';
 import {Box, Text, useApp} from 'ink';
 import {ShellFrame} from '../frame/index.js';
 import {HelpOverlay, KeyHints, KeymapProvider, useKeybindings} from '../keys/index.js';
-import {Pane, PaneFocusProvider, Split, usePane, usePaneKeybindings} from '../panes/index.js';
+import {
+  Pane,
+  PaneFocusProvider,
+  Split,
+  useFocusedPane,
+  usePane,
+  usePaneKeybindings,
+} from '../panes/index.js';
+import {StatusBar, StatusProvider, useNotify, useStatusSegment} from '../status/index.js';
 import {relayTheme} from '../theme.js';
 import type {ShellTheme} from '../theme.js';
 import {demoHosts} from './hosts.js';
@@ -45,6 +53,7 @@ const HostList = ({
       keys: ['k', 'up'],
       description: 'Previous host',
       group: 'Hosts',
+      hint: false,
       run: () => onSelect(Math.max(0, selected - 1)),
     },
   ]);
@@ -86,13 +95,52 @@ const HostDetail = ({host, theme}: {host: DemoHost; theme: ShellTheme}) => (
   </>
 );
 
+const paneLabels = new Map([
+  ['hosts', 'HOSTS'],
+  ['detail', 'DETAIL'],
+  ['events', 'EVENTS'],
+]);
+
+const DemoStatus = ({host, theme}: {host: DemoHost | undefined; theme: ShellTheme}) => {
+  const focused = useFocusedPane();
+  const down = demoHosts.filter((candidate) => candidate.status === 'down').length;
+  useStatusSegment(
+    host === undefined
+      ? undefined
+      : {
+          text: `${host.name} ${host.status}`,
+          tone:
+            host.status === 'healthy'
+              ? 'success'
+              : host.status === 'degraded'
+                ? 'warning'
+                : 'danger',
+        },
+  );
+  useStatusSegment({text: `${demoHosts.length} hosts`, side: 'right', order: 1});
+  useStatusSegment({text: `${down} down`, side: 'right', tone: down > 0 ? 'danger' : 'neutral'});
+  return (
+    <>
+      <StatusBar label={paneLabels.get(focused ?? '') ?? 'SHELL'} theme={theme} />
+      <KeyHints theme={theme} />
+    </>
+  );
+};
+
 const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'interactive'>) => {
   const {exit} = useApp();
+  const notify = useNotify();
   const [help, setHelp] = useState(false);
   const [selected, setSelected] = useState(0);
   useKeybindings([
     {keys: ['q', 'ctrl+c'], description: 'Quit', group: 'Application', run: () => exit()},
     {keys: '?', description: 'Help', group: 'Application', run: () => setHelp(true)},
+    {
+      keys: 'r',
+      description: 'Refresh',
+      group: 'Application',
+      run: () => notify(`Refreshed ${demoHosts.length} hosts`, {tone: 'success'}),
+    },
   ]);
   const host = demoHosts[selected] ?? demoHosts[0];
   return (
@@ -102,27 +150,25 @@ const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'int
       theme={theme}
       {...(width === undefined ? {} : {width})}
       {...(height === undefined ? {} : {height})}
-      footer={<KeyHints theme={theme} />}
+      footer={<DemoStatus host={host} theme={theme} />}
     >
-      <PaneFocusProvider>
-        <Split direction="row">
-          <Pane id="hosts" title="Hosts" detail={`${demoHosts.length}`} size={28} theme={theme}>
-            <HostList selected={selected} onSelect={setSelected} theme={theme} />
+      <Split direction="row">
+        <Pane id="hosts" title="Hosts" detail={`${demoHosts.length}`} size={28} theme={theme}>
+          <HostList selected={selected} onSelect={setSelected} theme={theme} />
+        </Pane>
+        <Split direction="column">
+          <Pane id="detail" title="Detail" theme={theme}>
+            {host === undefined ? null : <HostDetail host={host} theme={theme} />}
           </Pane>
-          <Split direction="column">
-            <Pane id="detail" title="Detail" theme={theme}>
-              {host === undefined ? null : <HostDetail host={host} theme={theme} />}
-            </Pane>
-            <Pane id="events" title="Events" size={7} theme={theme}>
-              {(host?.events ?? []).map((event) => (
-                <Text key={event} color={theme.muted} wrap="truncate-end">
-                  {event}
-                </Text>
-              ))}
-            </Pane>
-          </Split>
+          <Pane id="events" title="Events" size={7} theme={theme}>
+            {(host?.events ?? []).map((event) => (
+              <Text key={event} color={theme.muted} wrap="truncate-end">
+                {event}
+              </Text>
+            ))}
+          </Pane>
         </Split>
-      </PaneFocusProvider>
+      </Split>
       {help ? (
         <Box position="absolute" top={2} left={4}>
           <HelpOverlay theme={theme} onClose={() => setHelp(false)} />
@@ -134,6 +180,10 @@ const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'int
 
 export const DemoApp = ({interactive = true, ...props}: DemoAppProps) => (
   <KeymapProvider active={interactive}>
-    <DemoScreen {...props} />
+    <StatusProvider>
+      <PaneFocusProvider>
+        <DemoScreen {...props} />
+      </PaneFocusProvider>
+    </StatusProvider>
   </KeymapProvider>
 );
