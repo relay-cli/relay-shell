@@ -30,6 +30,30 @@ await runShell(
 
 `runShell` renders on the alternate screen, so the terminal's scrollback is restored when the application exits.
 
+## Panes
+
+`Split` and `Pane` divide the screen into regions. Each pane can take focus, and `Tab` moves focus between them.
+
+```tsx
+<PaneFocusProvider>
+  <Split direction="row">
+    <Pane id="hosts" title="Hosts" size={28}>
+      <HostList />
+    </Pane>
+    <Split direction="column">
+      <Pane id="detail" title="Detail">
+        <HostDetail />
+      </Pane>
+      <Pane id="events" title="Events" size="30%">
+        <Events />
+      </Pane>
+    </Split>
+  </Split>
+</PaneFocusProvider>
+```
+
+See [the pane guide](./docs/panes.md) for sizes, focus order, and keys that belong to one pane.
+
 ## Keybindings
 
 Components declare the keys they handle, and Relay Shell routes each key press to the right one. Overlays sit above panes, and panes sit above application-wide keys.
