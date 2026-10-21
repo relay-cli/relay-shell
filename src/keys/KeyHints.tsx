@@ -4,14 +4,16 @@ import type {ShellTheme} from '../theme.js';
 import {useKeyHints} from './react.js';
 
 export interface KeyHintsProps {
-  /** Show at most this many hints, highest layer first. */
+  /** Show at most this many hints, highest layer first. Bindings with `hint: false` are skipped. */
   limit?: number;
   theme?: ShellTheme;
 }
 
 /** A single line of the most relevant bindings, such as `Tab next · q quit`. */
 export const KeyHints = ({limit = 6, theme = relayTheme}: KeyHintsProps) => {
-  const hints = useKeyHints().slice(0, limit);
+  const hints = useKeyHints()
+    .filter((hint) => hint.hint)
+    .slice(0, limit);
   return (
     <Text wrap="truncate-end">
       {hints.map((hint, index) => (

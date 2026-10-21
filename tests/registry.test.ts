@@ -102,6 +102,12 @@ describe('KeyRegistry', () => {
     expect(registry.list().map((hint) => hint.description)).toEqual(['Confirm']);
   });
 
+  it('keeps bindings marked hint: false in the list for help', () => {
+    const registry = new KeyRegistry();
+    registry.register([{keys: 'k', description: 'Up', hint: false, run: vi.fn()}]);
+    expect(registry.list()).toEqual([{keys: 'k', description: 'Up', hint: false, layer: 0}]);
+  });
+
   it('notifies subscribers only when the listed bindings change', () => {
     const registry = new KeyRegistry();
     const listener = vi.fn();

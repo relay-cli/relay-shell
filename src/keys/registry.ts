@@ -19,6 +19,8 @@ export interface KeyBinding {
   description?: string;
   /** Heading the binding is listed under in help. */
   group?: string;
+  /** Set to `false` to list the binding in help but not in one-line hints. */
+  hint?: boolean;
   /** Return `false` to let the key continue to lower layers. */
   run: () => unknown;
 }
@@ -39,6 +41,7 @@ export interface ResolvedBinding {
   labels: readonly string[];
   description?: string;
   group?: string;
+  hint: boolean;
   run: () => unknown;
 }
 
@@ -46,6 +49,7 @@ export interface ListedBinding {
   keys: string;
   description: string;
   group?: string;
+  hint: boolean;
   layer: number;
 }
 
@@ -64,6 +68,7 @@ export const resolveBinding = (binding: KeyBinding): ResolvedBinding => {
     chords,
     labels: chords.map(formatChord),
     run: binding.run,
+    hint: binding.hint ?? true,
     ...(binding.description === undefined ? {} : {description: binding.description}),
     ...(binding.group === undefined ? {} : {group: binding.group}),
   };
@@ -158,6 +163,7 @@ export class KeyRegistry {
         listed.push({
           keys: labels.join(' / '),
           description: binding.description,
+          hint: binding.hint,
           layer: entry.layer,
           ...(binding.group === undefined ? {} : {group: binding.group}),
         });

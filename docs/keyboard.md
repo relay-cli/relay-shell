@@ -49,4 +49,4 @@ useKeybindings([{keys: 'enter', run: submit}], {
 
 ## Help and hints
 
-Bindings with a `description` are listed by `HelpOverlay`, grouped by `group`, and summarized on one line by `KeyHints`. A key that a higher layer already handles is listed only once, under the binding that will receive it.
+Bindings with a `description` are listed by `HelpOverlay`, grouped by `group`, and summarized on one line by `KeyHints`. A key that a higher layer already handles is listed only once, under the binding that will receive it. Set `hint: false` on a binding to keep it in help but out of the one-line hints.

@@ -54,6 +54,23 @@ await runShell(
 
 See [the pane guide](./docs/panes.md) for sizes, focus order, and keys that belong to one pane.
 
+## Status bar
+
+Components publish short segments to the status bar, and any component can show a notice that briefly replaces them.
+
+```tsx
+const HostSummary = ({hosts}: {hosts: Host[]}) => {
+  const notify = useNotify();
+  useStatusSegment({text: `${hosts.length} hosts`, side: 'right'});
+  useKeybindings([
+    {keys: 'r', description: 'Refresh', run: () => notify('Refreshed', {tone: 'success'})},
+  ]);
+  return null;
+};
+```
+
+See [the status bar guide](./docs/status-bar.md).
+
 ## Keybindings
 
 Components declare the keys they handle, and Relay Shell routes each key press to the right one. Overlays sit above panes, and panes sit above application-wide keys.
