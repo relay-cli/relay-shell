@@ -1,16 +1,9 @@
 import {useState} from 'react';
-import {Box, Text, useApp} from 'ink';
-import {ShellFrame} from '../frame/index.js';
-import {HelpOverlay, KeyHints, KeymapProvider, useKeybindings} from '../keys/index.js';
-import {
-  Pane,
-  PaneFocusProvider,
-  Split,
-  useFocusedPane,
-  usePane,
-  usePaneKeybindings,
-} from '../panes/index.js';
-import {StatusBar, StatusProvider, useNotify, useStatusSegment} from '../status/index.js';
+import {Box, Text} from 'ink';
+import {useKeybindings} from '../keys/index.js';
+import {Pane, Split, usePane, usePaneKeybindings} from '../panes/index.js';
+import {Shell} from '../shell/index.js';
+import {useNotify, useStatusSegment} from '../status/index.js';
 import {relayTheme} from '../theme.js';
 import type {ShellTheme} from '../theme.js';
 import {demoHosts} from './hosts.js';
@@ -95,14 +88,8 @@ const HostDetail = ({host, theme}: {host: DemoHost; theme: ShellTheme}) => (
   </>
 );
 
-const paneLabels = new Map([
-  ['hosts', 'HOSTS'],
-  ['detail', 'DETAIL'],
-  ['events', 'EVENTS'],
-]);
-
-const DemoStatus = ({host, theme}: {host: DemoHost | undefined; theme: ShellTheme}) => {
-  const focused = useFocusedPane();
+const DemoStatus = ({host}: {host: DemoHost | undefined}) => {
+  const notify = useNotify();
   const down = demoHosts.filter((candidate) => candidate.status === 'down').length;
   useStatusSegment(
     host === undefined
@@ -119,22 +106,7 @@ const DemoStatus = ({host, theme}: {host: DemoHost | undefined; theme: ShellThem
   );
   useStatusSegment({text: `${demoHosts.length} hosts`, side: 'right', order: 1});
   useStatusSegment({text: `${down} down`, side: 'right', tone: down > 0 ? 'danger' : 'neutral'});
-  return (
-    <>
-      <StatusBar label={paneLabels.get(focused ?? '') ?? 'SHELL'} theme={theme} />
-      <KeyHints theme={theme} />
-    </>
-  );
-};
-
-const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'interactive'>) => {
-  const {exit} = useApp();
-  const notify = useNotify();
-  const [help, setHelp] = useState(false);
-  const [selected, setSelected] = useState(0);
   useKeybindings([
-    {keys: ['q', 'ctrl+c'], description: 'Quit', group: 'Application', run: () => exit()},
-    {keys: '?', description: 'Help', group: 'Application', run: () => setHelp(true)},
     {
       keys: 'r',
       description: 'Refresh',
@@ -142,16 +114,22 @@ const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'int
       run: () => notify(`Refreshed ${demoHosts.length} hosts`, {tone: 'success'}),
     },
   ]);
+  return null;
+};
+
+export const DemoApp = ({theme = relayTheme, width, height, interactive = true}: DemoAppProps) => {
+  const [selected, setSelected] = useState(0);
   const host = demoHosts[selected] ?? demoHosts[0];
   return (
-    <ShellFrame
+    <Shell
       title="Relay Shell"
       subtitle="demo"
       theme={theme}
+      interactive={interactive}
       {...(width === undefined ? {} : {width})}
       {...(height === undefined ? {} : {height})}
-      footer={<DemoStatus host={host} theme={theme} />}
     >
+      <DemoStatus host={host} />
       <Split direction="row">
         <Pane id="hosts" title="Hosts" detail={`${demoHosts.length}`} size={28} theme={theme}>
           <HostList selected={selected} onSelect={setSelected} theme={theme} />
@@ -169,21 +147,6 @@ const DemoScreen = ({theme = relayTheme, width, height}: Omit<DemoAppProps, 'int
           </Pane>
         </Split>
       </Split>
-      {help ? (
-        <Box position="absolute" top={2} left={4}>
-          <HelpOverlay theme={theme} onClose={() => setHelp(false)} />
-        </Box>
-      ) : null}
-    </ShellFrame>
+    </Shell>
   );
 };
-
-export const DemoApp = ({interactive = true, ...props}: DemoAppProps) => (
-  <KeymapProvider active={interactive}>
-    <StatusProvider>
-      <PaneFocusProvider>
-        <DemoScreen {...props} />
-      </PaneFocusProvider>
-    </StatusProvider>
-  </KeymapProvider>
-);
