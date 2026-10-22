@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: Cascadia;
+        src: url('file:///C:/Windows/Fonts/CascadiaMono.ttf');
+        font-weight: 200 700;
+      }
+      :root {
+        --bg: #080b0f;
+        --surface: #0e141b;
+        --rule: #34414d;
+        --text: #e8edf2;
+        --muted: #84909c;
+        --blue: #48a8ff;
+        --orange: #ff8a3d;
+        --green: #4fd18b;
+        --red: #ff4d5a;
+        --yellow: #f0c84b;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+      }
+      body {
+        width: 2172px;
+        height: 724px;
+        overflow: hidden;
+        color: var(--text);
+        font-family: Cascadia, Consolas, monospace;
+        background: radial-gradient(ellipse at 75% 0%, #101820 0%, var(--bg) 60%);
+        display: flex;
+        align-items: center;
+      }
+      .brand {
+        width: 1000px;
+        padding-left: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 30px;
+        box-sizing: border-box;
+      }
+      .mark {
+        width: 210px;
+        height: 235px;
+        flex-shrink: 0;
+        margin-left: 30px;
+      }
+      .name {
+        font-size: 112px;
+        font-weight: 700;
+        letter-spacing: 6px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .tag {
+        margin-top: 26px;
+        font-size: 29px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+      .divider {
+        width: 2px;
+        height: 590px;
+        background: #1c252e;
+        margin-right: 44px;
+      }
+      .term {
+        width: 1050px;
+        height: 600px;
+        border: 2px solid var(--rule);
+        border-radius: 14px;
+        background: #0a0f14;
+        padding: 20px 22px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        font-size: 25px;
+      }
+      .title {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+      }
+      .title b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .bar {
+        color: var(--orange);
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        flex: 1;
+        min-height: 0;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        flex: 1;
+      }
+      .pane {
+        border: 2px solid var(--rule);
+        border-radius: 10px;
+        padding: 14px 18px;
+        background: var(--surface);
+        box-sizing: border-box;
+      }
+      .pane.focus {
+        border-color: var(--blue);
+        box-shadow:
+          0 0 0 1px rgba(72, 168, 255, 0.25),
+          0 0 24px rgba(72, 168, 255, 0.12);
+      }
+      .ptitle {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        font-size: 22px;
+      }
+      .focus .ptitle span:first-child {
+        color: var(--blue);
+      }
+      .hosts {
+        width: 330px;
+      }
+      .item {
+        line-height: 1.6;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .item.sel {
+        color: var(--text);
+      }
+      .caret {
+        color: var(--blue);
+        display: inline-block;
+        width: 26px;
+      }
+      .dot {
+        margin-right: 10px;
+      }
+      .kv {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      .kv b {
+        color: var(--text);
+        font-weight: 400;
+      }
+      .big {
+        font-size: 30px;
+        font-weight: 600;
+      }
+      .events {
+        height: 150px;
+        flex: none;
+      }
+      .ev {
+        color: var(--muted);
+        line-height: 1.55;
+        white-space: nowrap;
+      }
+      .status {
+        display: flex;
+        justify-content: space-between;
+        background: #131b23;
+        border-radius: 6px;
+        padding: 6px 12px 6px 0;
+        align-items: center;
+      }
+      .label {
+        background: var(--orange);
+        color: var(--bg);
+        font-weight: 700;
+        padding: 2px 14px;
+        border-radius: 6px 0 0 6px;
+        margin-right: 16px;
+      }
+      .hints {
+        color: var(--muted);
+        font-size: 22px;
+        white-space: nowrap;
+      }
+      .k {
+        color: var(--blue);
+      }
+      .sep {
+        color: var(--rule);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brand">
+      <svg class="mark" viewBox="300 260 680 760" xmlns="http://www.w3.org/2000/svg">
+        <g stroke-linejoin="round" stroke-width="44">
+          <polygon
+            fill="#48A8FF"
+            stroke="#48A8FF"
+            points="372,320 472,320 670,520 472,742 372,742 556,531"
+          />
+          <polygon
+            fill="#FF8A3D"
+            stroke="#FF8A3D"
+            points="642,584 742,584 900,770 726,952 626,952 790,770"
+          />
+          <rect x="552" y="553" width="152" height="148" rx="22" fill="#161B22" stroke="none" />
+        </g>
+      </svg>
+      <div>
+        <div class="name">RELAY SHELL</div>
+        <div class="tag">Panes, keys, and a status bar for the terminal.</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="term">
+      <div class="title">
+        <span><span class="bar">▌</span> <b>Inventory</b> · 5 hosts</span><span>~/ops</span>
+      </div>
+      <div class="row">
+        <div class="pane hosts focus">
+          <div class="ptitle"><span>HOSTS</span><span>5</span></div>
+          <div class="item">
+            <span class="caret"></span><span class="dot" style="color: var(--green)">●</span>api-1
+          </div>
+          <div class="item sel">
+            <span class="caret">›</span><span class="dot" style="color: var(--yellow)">●</span>api-2
+          </div>
+          <div class="item">
+            <span class="caret"></span
+            ><span class="dot" style="color: var(--green)">●</span>worker-1
+          </div>
+          <div class="item">
+            <span class="caret"></span><span class="dot" style="color: var(--red)">●</span>worker-2
+          </div>
+          <div class="item">
+            <span class="caret"></span><span class="dot" style="color: var(--green)">●</span>cache-1
+          </div>
+        </div>
+        <div class="col">
+          <div class="pane" style="flex: 1">
+            <div class="ptitle"><span>DETAIL</span></div>
+            <div class="big">api-2</div>
+            <div style="color: var(--yellow); margin-bottom: 12px">degraded</div>
+            <div class="kv">region <b>eu-west</b></div>
+            <div class="kv">cpu <b style="color: var(--yellow)">91%</b> · uptime <b>41d 6h</b></div>
+          </div>
+          <div class="pane events">
+            <div class="ptitle"><span>EVENTS</span></div>
+            <div class="ev">09:31 cpu above 90% for 5m</div>
+            <div class="ev">09:12 deploy 2.14.0 finished</div>
+          </div>
+        </div>
+      </div>
+      <div class="status">
+        <span
+          ><span class="label">HOSTS</span
+          ><span style="color: var(--yellow)">api-2 degraded</span></span
+        >
+        <span style="color: var(--muted)"
+          >5 hosts <span class="sep">·</span> <span style="color: var(--red)">1 down</span></span
+        >
+      </div>
+      <div class="hints">
+        <span class="k">j/↓</span> next host <span class="sep">·</span>
+        <span class="k">Tab</span> next pane <span class="sep">·</span>
+        <span class="k">?</span> help <span class="sep">·</span> <span class="k">q</span> quit
+      </div>
+    </div>
+  </body>
+</html>
